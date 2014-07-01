@@ -14,4 +14,5 @@ public class TMScreenType extends ScreenType {
 	public final static int KILL_MONSTER =		1 << 18;
 	public final static int END_LEVEL =			1 << 19;
 	public final static int END_GAME =			1 << 20;
+	public final static int DEBUG =				1 << 21;
 }
