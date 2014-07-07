@@ -29,16 +29,20 @@ public class KillMonsterScreen extends Screen {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
 			if (entity == _killButton || entity == _leaveButton) {
-				if (TMManager.Level.getCurrentLevel() == 30)
-					_code = TMScreenCode.TRANSITION_END_GAME;
-				else
-					_code = TMScreenCode.TRANSITION_END_LEVEL;
+				if (TMManager.Level.getCurrentLevel() == 30) {
+					_screenData.setCode(TMScreenCode.TRANSITION);
+					_screenData.setActionScreen(TMScreenType.END_GAME);
+				}
+				else {
+					_screenData.setCode(TMScreenCode.TRANSITION);
+					_screenData.setActionScreen(TMScreenType.END_LEVEL);
+				}
 			}
 		}
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		int level = TMManager.Level.getCurrentLevel();
 		TMGlobal.TMSettings.setLevelComplete(level, true);
 		

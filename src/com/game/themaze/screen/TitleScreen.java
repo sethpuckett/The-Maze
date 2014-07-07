@@ -74,12 +74,18 @@ public class TitleScreen extends Screen {
 				_creditsButton.enableBehaviors(TMBehaviorType.TWEEN);
 				_soundButton.enableBehaviors(TMBehaviorType.TWEEN);
 				
-				if (_newGameClicked)
-					_code = TMScreenCode.TRANSITION_JOURNAL;
-				else if (_continueClicked)
-					_code = TMScreenCode.TRANSITION_LEVEL_SELECT;
-				else if (_creditsClicked)
-					_code = TMScreenCode.TRANSITION_CREDITS;
+				if (_newGameClicked) {
+					_screenData.setCode(TMScreenCode.TRANSITION);
+					_screenData.setActionScreen(TMScreenType.JOURNAL);
+				}
+				else if (_continueClicked) {
+					_screenData.setCode(TMScreenCode.TRANSITION);
+					_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
+				}
+				else if (_creditsClicked) {
+					_screenData.setCode(TMScreenCode.TRANSITION);
+					_screenData.setActionScreen(TMScreenType.CREDITS);
+				}
 			}
 		}
 		else if (message.Type == MessageType.ANIMATION_FINISHED) {
@@ -96,7 +102,7 @@ public class TitleScreen extends Screen {
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		_buttonClicked = false;
 		_newGameClicked = false;
 		_continueClicked = false;
@@ -131,7 +137,7 @@ public class TitleScreen extends Screen {
 	}
 	
 	@Override
-	protected void enableBehaviors() {
+	protected void enableBehaviors() { // TODO: need new way to handle this. don't want to override enableBehaviors, but child classes need a way to tell ScreenManager not to enable all behaviors
 		_title.enableBehaviors();
 		_scrollingBackground.enableBehaviors();
 		if (_continueButton != null)

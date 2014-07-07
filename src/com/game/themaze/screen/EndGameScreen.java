@@ -18,9 +18,10 @@ public class EndGameScreen extends Screen {
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		//TODO: testing
-		_code = TMScreenCode.TRANSITION_TITLE;
+		_screenData.setCode(TMScreenCode.TRANSITION);
+		_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
 	}
 
 	@Override
@@ -42,7 +43,7 @@ public class EndGameScreen extends Screen {
 	}
 
 	@Override
-	public void update(float updateRatio) {
+	public void onActiveUpdate(float updateRatio) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -27,6 +27,7 @@ import com.game.themaze.behavior.PlayerRenderBehavior;
 import com.game.themaze.behavior.RenderBehavior;
 import com.game.themaze.behavior.ScrollingTileBehavior;
 import com.game.themaze.behavior.TMBehaviorType;
+import com.game.themaze.behavior.TextRenderBehavior;
 import com.game.themaze.behavior.TileRenderBehavior;
 import com.game.themaze.behavior.TimerBehavior;
 import com.game.themaze.behavior.TouchDestinationBehavior;
@@ -153,6 +154,19 @@ public class EntityHelper {
 		return entity;
 	}
 
+	public static GameEntity textButton(String textName, String text, boolean useCamera, boolean centerX, boolean centerY, float positionX, float positionY, float red, float green, float blue, float alpha) {
+		GameEntity entity = text(textName, text, positionX, positionY, centerX, centerY, 0f, red, green, blue, alpha);
+		entity.addBehavior(new ButtonBehavior(AreaType.Rectangle, useCamera));
+		return entity;
+	}
+	
+	public static GameEntity textButton(String textName, String text, boolean useCamera, float sizeX, float sizeY, boolean centerX, boolean centerY, float positionX, float positionY, float red, float green, float blue, float alpha, boolean clickOnRelease) {
+		GameEntity entity = text(textName, text, positionX, positionY, centerX, centerY, 0f, red, green, blue, alpha);
+		entity.addBehavior(new ButtonBehavior(AreaType.Rectangle, useCamera, clickOnRelease));
+		return entity;
+	}
+
+	
 	public static GameEntity timer(int timerType, float time) {
 		GameEntity entity = new GameEntity();
 		entity.addBehavior(new TimerBehavior(timerType, time));
@@ -453,5 +467,21 @@ public class EntityHelper {
 				doorOpenType,
 				open));
 		return anchor;
+	}
+
+	public static GameEntity text(String textName, String text, float x, float y, boolean centerX, boolean centerY) {
+		GameEntity entity = new GameEntity();
+		entity.Attributes.Area.Position.X = x;
+		entity.Attributes.Area.Position.Y = y;
+		entity.addBehavior(new TextRenderBehavior(textName, text, centerX, centerY, true));
+		return entity;
+	}
+	
+	public static GameEntity text(String textName, String text, float x, float y, boolean centerX, boolean centerY, float width, float red, float green, float blue, float alpha) {
+		GameEntity entity = new GameEntity();
+		entity.Attributes.Area.Position.X = x;
+		entity.Attributes.Area.Position.Y = y;
+		entity.addBehavior(new TextRenderBehavior(textName, text, centerX, centerY, width, red, green, blue, alpha, true));
+		return entity;
 	}
 }

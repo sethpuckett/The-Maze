@@ -31,7 +31,8 @@ public class PlayerDeathScreen extends Screen {
 	
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_LEVEL_SELECT;
+		_screenData.setCode(TMScreenCode.TRANSITION);
+		_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class PlayerDeathScreen extends Screen {
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		int subHeadImage = 0;
 		Random imageCheck = new Random();
 		Random rareCheck = new Random();
@@ -107,10 +108,14 @@ public class PlayerDeathScreen extends Screen {
 	public void onHandleMessage(Message message) {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
-			if (entity == _restartButton)
-				_code = TMScreenCode.TRANSITION_LEVEL;
-			else if (entity == _levelSelectButton)
-				_code = TMScreenCode.TRANSITION_LEVEL_SELECT;
+			if (entity == _restartButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.LEVEL);
+			}
+			else if (entity == _levelSelectButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
+			}
 		}
 	}
 

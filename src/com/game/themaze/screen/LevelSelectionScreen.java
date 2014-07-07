@@ -49,7 +49,7 @@ public class LevelSelectionScreen extends Screen {
 	}
 	
 	@Override
-	protected void onInit() {
+	protected void onInit(Object input) {
 		_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
 		_entities.add(_background);
 		_titleScreenButton = EntityHelper.button(TMImage.BACK_BUTTON, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width / 2.5f, Global.Renderer.Width / 5f, false, Global.Renderer.Width / 60f, Global.Renderer.Width / 60f, AreaType.Rectangle);
@@ -173,7 +173,7 @@ public class LevelSelectionScreen extends Screen {
 	}
 
 	@Override
-	public void update(float updateRatio) {
+	public void onActiveUpdate(float updateRatio) {
 		if (_dragging) {
 			((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).getCurrentLocation(_newLocation);
 			float xChange = _newLocation.X - _previousLocation.X;
@@ -223,7 +223,8 @@ public class LevelSelectionScreen extends Screen {
 	
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_TITLE;
+		_screenData.setCode(TMScreenCode.TRANSITION);
+		_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
 	}
 	
 	@Override
@@ -231,11 +232,14 @@ public class LevelSelectionScreen extends Screen {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
 			int levIndex;
-			if (entity == _titleScreenButton)
-				_code = TMScreenCode.TRANSITION_TITLE;
+			if (entity == _titleScreenButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
+			}
 			else if ((levIndex = _levelButtons.find(entity, false)) != -1) {
 				TMManager.Level.setCurrentLevel(levIndex + 1);
-				_code = TMScreenCode.TRANSITION_JOURNAL;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.JOURNAL);
 			}
 		}
 		else if (message.Type == MessageType.DRAG_START) {

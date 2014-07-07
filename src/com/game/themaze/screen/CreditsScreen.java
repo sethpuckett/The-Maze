@@ -29,7 +29,8 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_TITLE;
+		_screenData.setCode(TMScreenCode.TRANSITION);
+		_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
 	}
 	
 	@Override
@@ -37,13 +38,14 @@ public class CreditsScreen extends Screen {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
 			if (entity == _backButton) {
-				_code = TMScreenCode.TRANSITION_TITLE;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
 			}
 		}
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
 		_entities.add(_background);
 		

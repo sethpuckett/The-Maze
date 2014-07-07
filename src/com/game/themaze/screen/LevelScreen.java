@@ -5,6 +5,7 @@ import com.game.loblib.screen.Screen;
 import com.game.loblib.utility.ButtonControlType;
 import com.game.loblib.utility.Global;
 import com.game.loblib.utility.Manager;
+import com.game.loblib.utility.android.FixedSizeArray;
 import com.game.themaze.level.Level;
 import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.sound.TMSound;
@@ -23,24 +24,39 @@ public class LevelScreen extends Screen {
 	
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_LEVEL_OPTIONS;
+		_screenData.setCode(TMScreenCode.PUSH);
+		//_screenData.setActionScreen(TMScreenType.LEVEL_OPTIONS);
+		FixedSizeArray<String> testOptions = new FixedSizeArray<String>(8);
+		testOptions.add("Option 1");
+		testOptions.add("Option 2");
+		testOptions.add("Option 3");
+		testOptions.add("Option 4");
+		testOptions.add("Option 5");
+		testOptions.add("Option 6");
+		_screenData.setInput(testOptions);
+		_screenData.setActionScreen(TMScreenType.SELECT_LIST);
 	}
 	
 	@Override
 	public void onMenuDown() {
-		_code = TMScreenCode.TRANSITION_LEVEL_OPTIONS;
+		_screenData.setCode(TMScreenCode.PUSH);
+		_screenData.setActionScreen(TMScreenType.LEVEL_OPTIONS);
 	}
 	
 	@Override
 	public void onHandleMessage(Message message) {
-		if (message.Type == TMMessageType.GOAL_REACHED)
-			_code = TMScreenCode.TRANSITION_KILL;
-		else if (message.Type == TMMessageType.PLAYER_DEATH)
-			_code = TMScreenCode.TRANSITION_DEATH;
+		if (message.Type == TMMessageType.GOAL_REACHED) {
+			_screenData.setCode(TMScreenCode.TRANSITION);
+			_screenData.setActionScreen(TMScreenType.KILL_MONSTER);
+		}
+		else if (message.Type == TMMessageType.PLAYER_DEATH) {
+			_screenData.setCode(TMScreenCode.TRANSITION);
+			_screenData.setActionScreen(TMScreenType.PLAYER_DEATH);
+		}
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		TMManager.Level.loadLevel();
 		Global.Camera.YOffset = TMManager.Level.getControlBarHeight();
 		_entities.addAll(TMManager.Level.getLevelEntities());
@@ -49,7 +65,7 @@ public class LevelScreen extends Screen {
 	}
 
 	@Override
-	public void enableBehaviors() {
+	protected void enableBehaviors() {
 		TMManager.Level.enableBehaviors();
 	}
 	
@@ -72,7 +88,7 @@ public class LevelScreen extends Screen {
 	}
 
 	@Override
-	public void update(float updateRatio) {
+	public void onActiveUpdate(float updateRatio) {
 		TMManager.Level.updateLevel();
 	}
 }

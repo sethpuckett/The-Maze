@@ -13,6 +13,7 @@ public class TMBehaviorType extends BehaviorType {
 	public static final long BLINK			= 1 << 6;
 	public static final long MONSTER_RENDER	= 1 << 7;
 	public static final long DELAYED_RENDER	= 1 << 28;
+	public static final long TEXT_RENDER	= 1 << 29;
 	
 	//movement
 	public static final long PLAYER_MOVE 	= 1 << 8;
@@ -36,7 +37,6 @@ public class TMBehaviorType extends BehaviorType {
 	
 	//input
 	public static final long BUTTON 		= 1 << 18;
-	public static final long SCREEN_DRAG	= 1 << 19;
 	
 	//animation
 	public static final long TWEEN 			= 1 << 25;
@@ -49,4 +49,5 @@ public class TMBehaviorType extends BehaviorType {
 	public static final long GOAL_INDICATOR	= 1 << 34;
 	public static final long GAME_ITEM	=  1 << 35;
 	public static final long ENTITY_LINK	=  1 << 36;
+	public static final long SCREEN_DRAG	=  1 << 37;
 }

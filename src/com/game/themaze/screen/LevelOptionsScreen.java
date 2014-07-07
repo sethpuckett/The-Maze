@@ -32,26 +32,30 @@ public class LevelOptionsScreen extends Screen {
 	
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_LEVEL;
+		_screenData.setCode(TMScreenCode.POP);
 	}
 	
 	@Override
 	public void onHandleMessage(Message message) {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
-			if (entity == _resumeButton)
-				_code = TMScreenCode.TRANSITION_LEVEL;
-			else if (entity == _restartButton)
-				_code = TMScreenCode.TRANSITION_JOURNAL;
-			else if (entity == _levelSelectButton)
-				_code = TMScreenCode.TRANSITION_LEVEL_SELECT;
+			if (entity == _resumeButton) 
+				_screenData.setCode(TMScreenCode.POP);
+			else if (entity == _restartButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION_ALL);
+				_screenData.setActionScreen(TMScreenType.JOURNAL);
+			}
+			else if (entity == _levelSelectButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION_ALL);
+				_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
+			}
 			else if (entity == _soundButton)
 				toggleSound();
 		}
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
 		_entities.add(_background);
 		_resumeButton = EntityHelper.button(TMImage.RESUME_BUTTON, TMSpriteLayer.UI_LOW,

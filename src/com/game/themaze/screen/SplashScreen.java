@@ -15,14 +15,16 @@ public class SplashScreen extends Screen {
 	}
 	
 	@Override
-	public void update(float updateRatio) {
+	public void onActiveUpdate(float updateRatio) {
 		_elapsedTime += (updateRatio / 60f);
-		if (_elapsedTime > 2f)
-			_code = TMScreenCode.TRANSITION_TITLE;
+		if (_elapsedTime > 2f) {
+			_screenData.setCode(TMScreenCode.TRANSITION);
+			_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
+		}
 	}
 	
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		_entities.add(EntityHelper.graphic(TMImage.SPLASH_LOGO, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width * .75f,
 				Global.Renderer.Width * .75f, true, Global.Renderer.Width / 2, Global.Renderer.Height / 2));
 		_entities.add(EntityHelper.graphic(TMImage.WHITE, TMSpriteLayer.BACKGROUND1, false, 

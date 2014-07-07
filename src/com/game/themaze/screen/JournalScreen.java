@@ -28,13 +28,14 @@ public class JournalScreen extends Screen {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
 			if (entity == _continueButton) {
-				_code = TMScreenCode.TRANSITION_LEVEL;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.LEVEL);
 			}
 		}
 	}
 
 	@Override
-	public void onInit() {		
+	public void onInit(Object input) {		
 		_continueButton = EntityHelper.button(TMImage.CONTINUE_BUTTON,
 				TMSpriteLayer.UI_LOW, 
 				false, 

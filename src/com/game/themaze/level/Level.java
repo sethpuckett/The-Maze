@@ -123,7 +123,7 @@ public class Level implements IMessageHandler {
 		}
 	}
 	
-	public void enableBehaviors() {
+	public void enableBehaviors() {	
 		int count = _entities.getCount();
 		for (int i = 0; i < count; i++)
 			_entities.get(i).enableBehaviors();

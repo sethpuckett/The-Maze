@@ -31,7 +31,8 @@ public class EndLevelScreen extends Screen {
 	
 	@Override
 	public void onBackDown() {
-		_code = TMScreenCode.TRANSITION_TITLE;
+		_screenData.setCode(TMScreenCode.TRANSITION);
+		_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
 	}
 	
 	@Override
@@ -41,16 +42,18 @@ public class EndLevelScreen extends Screen {
 			if (entity == _nextButton) {
 				int level = TMManager.Level.getCurrentLevel();
 				TMManager.Level.setCurrentLevel(level + 1);
-				_code = TMScreenCode.TRANSITION_JOURNAL;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.JOURNAL);
 			}
 			else if (entity == _levelSelectButton) {
-				_code = TMScreenCode.TRANSITION_LEVEL_SELECT;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.LEVEL_SELECT);
 			}
 		}
 	}
 
 	@Override
-	public void onInit() {
+	public void onInit(Object input) {
 		_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
 		_entities.add(_background);
 		_nextButton = EntityHelper.button(TMImage.CONTINUE_BUTTON, TMSpriteLayer.UI_LOW,

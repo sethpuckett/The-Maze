@@ -28,13 +28,14 @@ public class DebugScreen extends Screen {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
 			GameEntity entity = message.getData();
 			if (entity == _startButton) {
-				_code = TMScreenCode.TRANSITION_LEVEL;
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.TITLE_SCREEN);
 			}
 		}
 	}
 
 	@Override
-	public void onInit() {		
+	public void onInit(Object input) {		
 		_startButton = EntityHelper.button(TMImage.CONTINUE_BUTTON,
 				TMSpriteLayer.UI_LOW, 
 				false, 
