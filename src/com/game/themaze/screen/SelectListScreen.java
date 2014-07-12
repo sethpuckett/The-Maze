@@ -10,10 +10,9 @@ import com.game.loblib.utility.Direction;
 import com.game.loblib.utility.Global;
 import com.game.loblib.utility.Logger;
 import com.game.loblib.utility.Manager;
+import com.game.loblib.utility.MathHelper;
 import com.game.loblib.utility.android.FixedSizeArray;
-import com.game.loblib.utility.area.Area;
 import com.game.loblib.utility.area.AreaType;
-import com.game.loblib.utility.area.Vertex;
 import com.game.themaze.behavior.ScreenDragBehavior;
 import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.entity.EntityHelper;
@@ -22,12 +21,12 @@ import com.game.themaze.graphics.TMSpriteLayer;
 
 public class SelectListScreen extends Screen {
 
-	FixedSizeArray<String> _options;
-	protected Vertex _previousLocation;
-	protected Vertex _newLocation;
-	protected boolean _dragging;
-	protected float _dragSpeed;
+	protected final static float SELECT_POSITION_Y = Global.Renderer.Height / 10f;
+	protected final static float SELECT_SIZE_Y = Global.Renderer.Height / 10f;
+	protected final static float BUTTON_HEIGHT = Global.Renderer.Height / 20f;
+	protected final static float BUTTON_BUFFER = Global.Renderer.Height / 200f;
 	
+	FixedSizeArray<String> _options;
 	protected GameEntity _background;
 	protected GameEntity _screenDrag;
 	protected FixedSizeArray<GameEntity> _optionButtons;
@@ -36,9 +35,6 @@ public class SelectListScreen extends Screen {
 	public SelectListScreen() {
 		_type = TMScreenType.SELECT_LIST;
 		_backBtnCtl = ButtonControlType.OVERRIDE;
-		
-		_previousLocation = new Vertex();
-		_newLocation = new Vertex();
 	}
 	
 	@Override
@@ -49,7 +45,7 @@ public class SelectListScreen extends Screen {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onInit(Object input) {
-		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | MessageType.DRAG_START | MessageType.DRAG_STOP);
+		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED);
 
 		try {
 			_options = (FixedSizeArray<String>)input;
@@ -67,12 +63,8 @@ public class SelectListScreen extends Screen {
 		_screenDrag = new GameEntity();
 		_screenDrag.addBehavior(new ScreenDragBehavior(Global.Renderer.Width / 10f));
 		_entities.add(_screenDrag);
-		_dragging = false;
-		_dragSpeed = 0f;
-		
+
 		// setup option entities
-		float buttonHeight = Global.Renderer.Height / 20f;
-		float buttonBuffer = Global.Renderer.Height / 200f;
 		_optionButtons = new FixedSizeArray<GameEntity>(_options.getCount()); 
 		for (int i = 0; i < _options.getCount(); i++) {
 //			GameEntity button = EntityHelper.textButton("CALIBRI BIG", 
@@ -86,50 +78,45 @@ public class SelectListScreen extends Screen {
 //					1f, 
 //					1f, 
 //					1f);
-			GameEntity button = EntityHelper.button(TMImage.BACK_BUTTON, TMSpriteLayer.UI_LOW, false, buttonHeight * 2f, buttonHeight, true, Global.Renderer.Width / 2f, Global.Renderer.Height - buttonBuffer - (buttonHeight + buttonBuffer) * i, AreaType.Rectangle);
+			GameEntity button = EntityHelper.button(TMImage.BACK_BUTTON, TMSpriteLayer.UI_LOW, false, BUTTON_HEIGHT * 2f, BUTTON_HEIGHT, true, Global.Renderer.Width / 2f, Global.Renderer.Height - BUTTON_BUFFER - (BUTTON_HEIGHT + BUTTON_BUFFER) * i, AreaType.Rectangle);
 			
 			_optionButtons.add(button);
 		}
 		_entities.addAll(_optionButtons);
 		
-		_selectButton = EntityHelper.textButton("CALIBRI BIG", "Select", false, true, false, Global.Renderer.Width / 2f, buttonBuffer, 1f, 1f, 1f, 1f);
+		_selectButton = EntityHelper.textButton("CALIBRI BIG", "Select", false, true, false, Global.Renderer.Width / 2f, BUTTON_BUFFER, 1f, 1f, 1f, 1f);
 		_entities.add(_selectButton);		
 	}
 	
 	@Override
 	public void onActiveUpdate(float updateRatio) {
-		if (_dragging || _dragSpeed != 0) {
-			((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).getCurrentLocation(_newLocation);
-			float yChange = _newLocation.Y - _previousLocation.Y;
-			for (int i = 0; i < _optionButtons.getCount(); i++) {
-				_optionButtons.get(i).Attributes.Area.Position.Y += yChange;
+		float yChange = ((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).getCurrentYDragDistance();
+
+		if (yChange != 0 && _optionButtons.getCount() > 0) {
+			GameEntity firstButton = _optionButtons.get(0);
+			GameEntity lastButton = _optionButtons.get(_optionButtons.getCount() - 1);
+			
+			// if buttons don't take up whole height don't scroll at all
+			float scrollAreaHeight = Global.Renderer.Height - SELECT_POSITION_Y + SELECT_SIZE_Y;
+			float buttonAreaHeight = (BUTTON_BUFFER + BUTTON_HEIGHT) * _optionButtons.getCount();
+			
+			if (buttonAreaHeight > scrollAreaHeight) {
+				// clamp change value to ensure buttons don't scroll down past select button or up off screen
+				float min = Global.Renderer.Height - firstButton.Attributes.Area.Position.Y - firstButton.Attributes.Area.getHeight();
+				float max = SELECT_POSITION_Y + SELECT_SIZE_Y - lastButton.Attributes.Area.Position.Y;
+				yChange = MathHelper.clamp(min, max, yChange);
+				
+				for (int i = 0; i < _optionButtons.getCount(); i++) {
+					_optionButtons.get(i).Attributes.Area.Position.Y += yChange;
+				}
 			}
-			Area.sync(_previousLocation, _newLocation);
 		}
 	}
 	
 	@Override
 	public void onHandleMessage(Message message) {
 		if (message.Type == MessageType.BUTTON_CLICKED) {
-			GameEntity entity = message.getData();
-		}
-		else if (message.Type == MessageType.DRAG_START) {
-			GameEntity entity = message.getData();
-			_dragging = true;
-			((ScreenDragBehavior)entity.getBehavior(TMBehaviorType.SCREEN_DRAG)).getStartLocation(_previousLocation);
-		}
-		else if (message.Type == MessageType.DRAG_STOP) {
-			GameEntity entity = message.getData();
-			float lastSpeed = ((ScreenDragBehavior)entity.getBehavior(TMBehaviorType.SCREEN_DRAG)).getLastYDragSpeed();
-			if (Math.abs(lastSpeed) < Global.Renderer.Height / 25f) {
-				if (lastSpeed < 0)
-					_dragSpeed = -Global.Renderer.Height / 25f;
-				else 
-					_dragSpeed = Global.Renderer.Height / 25f;
-			}
-			else 
-				_dragSpeed = lastSpeed;
-			_dragging = false;
+			//GameEntity entity = message.getData();
 		}
 	}
 
@@ -140,7 +127,7 @@ public class SelectListScreen extends Screen {
 
 	@Override
 	protected void onUnpause() {
-		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | MessageType.DRAG_START | MessageType.DRAG_STOP);
+		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED);
 	}
 
 	@Override

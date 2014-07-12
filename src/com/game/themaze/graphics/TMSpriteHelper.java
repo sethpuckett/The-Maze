@@ -406,19 +406,19 @@ public class TMSpriteHelper extends SpriteHelper {
 			s.Frames = FrameHelper._512x1024;
 			break;
 		case TMImage.JOURNAL_LEVEL_01:
-			s.Texture.ResourceId = R.drawable.journal_01;
+			s.Texture.ResourceId = R.drawable.journal_test;
 			s.Frames = FrameHelper._512x1024;
 			break;
 		case TMImage.JOURNAL_LEVEL_02:
-			s.Texture.ResourceId = R.drawable.journal_02;
+			s.Texture.ResourceId = R.drawable.journal_test;
 			s.Frames = FrameHelper._512x1024;
 			break;
 		case TMImage.JOURNAL_LEVEL_03:
-			s.Texture.ResourceId = R.drawable.journal_03;
+			s.Texture.ResourceId = R.drawable.journal_test;
 			s.Frames = FrameHelper._512x1024;
 			break;
 		case TMImage.JOURNAL_LEVEL_04:
-			s.Texture.ResourceId = R.drawable.journal_04;
+			s.Texture.ResourceId = R.drawable.journal_test;
 			s.Frames = FrameHelper._512x1024;
 			break;
 		case TMImage.TUTORIAL_POPUP_01:

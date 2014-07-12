@@ -90,7 +90,7 @@ public class PlayerDeathScreen extends Screen {
 				break;
 			}
 		}
-		_entities.add(EntityHelper.graphic(subHeadImage, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width, Global.Renderer.Width / 4f, false, 0, Global.Renderer.Height - (Global.Renderer.Width * 13f / 30f) ));
+		//_entities.add(EntityHelper.graphic(subHeadImage, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width, Global.Renderer.Width / 4f, false, 0, Global.Renderer.Height - (Global.Renderer.Width * 13f / 30f) ));
 		
 		_entities.add(EntityHelper.graphic(TMImage.DEATH_TEXT, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width, Global.Renderer.Width / 4f, false, 0, Global.Renderer.Height - (Global.Renderer.Width / 4f)));
 		_background = EntityHelper.scrollingGraphic(TMImage.DEATH_BONES, TMSpriteLayer.BACKGROUND1, Direction.LEFT, .3f, 0f, Global.Renderer.Height, true);

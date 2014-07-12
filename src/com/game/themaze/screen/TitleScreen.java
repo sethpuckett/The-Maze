@@ -19,6 +19,7 @@ import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.sound.TMSound;
+import com.game.themaze.utility.Debug;
 import com.game.themaze.utility.TMGlobal;
 import com.game.themaze.utility.TMManager;
 
@@ -117,7 +118,7 @@ public class TitleScreen extends Screen {
 				false, 0, Global.Renderer.Height - Global.Renderer.Width / 2f);
 		_entities.add(_title);
 		
-		if (TMGlobal.TMSettings.getCompletedLevelCount() > 0) {
+		if (TMGlobal.TMSettings.getCompletedLevelCount() > 0 || Debug.UnlockAllLevels) {
 			_continueButton = continueButton();
 			_entities.add(_continueButton);
 		}
