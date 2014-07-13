@@ -43,7 +43,7 @@ public class RenderTrailBehavior extends Behavior {
 			else {
 				sprite.Area.changeSize(-_shrinkRate * updateRatio, -_shrinkRate * updateRatio);
 				sprite.Alpha -= (_fadeRate * updateRatio);
-				Manager.Sprite.draw(sprite, _layer);
+				Manager.Sprite.draw(sprite, _entity.ScreenLevel, _layer);
 			}
 		}
 		int delCount = _toDelete.getCount();

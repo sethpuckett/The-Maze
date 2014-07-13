@@ -36,7 +36,7 @@ public class MimicRenderBehavior extends Behavior {
 		if (_customAlphaEnabled)
 			_mimicEntity.Attributes.Sprite.Alpha = _customAlpha;
 		if (_mimicEntity.Attributes.Sprite.isValid())
-			Manager.Sprite.draw(_mimicEntity.Attributes.Sprite, _layer);	
+			Manager.Sprite.draw(_mimicEntity.Attributes.Sprite, _entity.ScreenLevel, _layer);	
 		Area.sync(_mimicEntity.Attributes.Sprite.Area, _positionBackup);
 		if (_customAlphaEnabled)
 			_mimicEntity.Attributes.Sprite.Alpha = backupAlpha;

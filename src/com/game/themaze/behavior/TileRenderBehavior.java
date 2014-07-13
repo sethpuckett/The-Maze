@@ -45,7 +45,7 @@ public class TileRenderBehavior extends Behavior {
 	protected void onUpdate(float updateRatio) {
 		int count = _sprites.getCount();
 		for (int i = 0; i < count; i++)
-			Manager.Sprite.draw(_sprites.get(i), _layer);
+			Manager.Sprite.draw(_sprites.get(i), _entity.ScreenLevel, _layer);
 	}
 
 	@Override

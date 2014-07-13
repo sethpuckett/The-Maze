@@ -6,6 +6,7 @@ import com.game.loblib.utility.ButtonControlType;
 import com.game.loblib.utility.Global;
 import com.game.loblib.utility.Manager;
 import com.game.loblib.utility.android.FixedSizeArray;
+import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.level.Level;
 import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.sound.TMSound;
@@ -20,6 +21,7 @@ public class LevelScreen extends Screen {
 		_screenMusic = TMSound.THE_ABYSS;
 		_backBtnCtl = ButtonControlType.OVERRIDE;
 		_menuBtnCtl = ButtonControlType.OVERRIDE;
+		_noPauseBehaviorTypes = TMBehaviorType.RENDER | TMBehaviorType.PLAYER_RENDER | TMBehaviorType.WALL_RENDER | TMBehaviorType.MONSTER_RENDER | TMBehaviorType.TEXT_RENDER | TMBehaviorType.TILE_RENDER;
 	}
 	
 	@Override

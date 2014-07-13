@@ -149,14 +149,14 @@ public class FadeChainBehavior extends Behavior {
 				break;
 			case STATE_FADEIN:
 				_spriteChain.get(i).Alpha = ((_elapsedTime - _stateChangeTimingGrid[i][STATE_FADEIN]) / _fadeInTime) * _maxAlpha;
-				Manager.Sprite.draw(_spriteChain.get(i), _layer);
+				Manager.Sprite.draw(_spriteChain.get(i), _entity.ScreenLevel, _layer);
 				break;
 			case STATE_HOLD:
-				Manager.Sprite.draw(_spriteChain.get(i), _layer);
+				Manager.Sprite.draw(_spriteChain.get(i), _entity.ScreenLevel, _layer);
 				break;
 			case STATE_FADEOUT:
 				_spriteChain.get(i).Alpha = _maxAlpha - (((_elapsedTime - _stateChangeTimingGrid[i][STATE_FADEOUT]) / _fadeoutTime) * _maxAlpha);
-				Manager.Sprite.draw(_spriteChain.get(i), _layer);
+				Manager.Sprite.draw(_spriteChain.get(i), _entity.ScreenLevel, _layer);
 				break;
 			case STATE_OFF:
 				break;

@@ -14,6 +14,9 @@ import com.game.loblib.utility.area.AreaType;
 import com.game.themaze.behavior.ScreenDragBehavior;
 import com.game.themaze.behavior.ScrollingTileBehavior;
 import com.game.themaze.behavior.TMBehaviorType;
+import com.game.themaze.behavior.ScreenDragBehavior.DragThreshold;
+import com.game.themaze.behavior.ScreenDragBehavior.Friction;
+import com.game.themaze.behavior.ScreenDragBehavior.MomentumCutoff;
 import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
@@ -48,7 +51,10 @@ public class LevelSelectionScreen extends Screen {
 		_entities.add(_titleScreenButton);
 		
 		_screenDrag = new GameEntity();
-		_screenDrag.addBehavior(new ScreenDragBehavior(Global.Renderer.Width / 10f));
+		_screenDrag.addBehavior(new ScreenDragBehavior());
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setFriction(Friction.Off);
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setDragThreshold(DragThreshold.Low);
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setMomentumCutoff(MomentumCutoff.Low);
 		_entities.add(_screenDrag);
 
 		float screenX = Global.Renderer.Width;

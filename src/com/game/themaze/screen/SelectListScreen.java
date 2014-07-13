@@ -54,14 +54,14 @@ public class SelectListScreen extends Screen {
 			Logger.e(_tag, "Input should be of type FixedSizeArray<String>");
 		}
 		
-		_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
-		_entities.add(_background);
+		//_background = EntityHelper.scrollingGraphic(TMImage.SCROLLING_STONE_WALL, TMSpriteLayer.BACKGROUND1, Direction.LEFT, 1f, Global.Data.ScrollingBackgroundPos, Global.Renderer.Width * 1.8f, true);
+		//_entities.add(_background);
 		
 		_entities.add(EntityHelper.text("CALIBRI BIG", "TEXT", 0, 0, false, false, Global.Renderer.Width, 1f, 1f, 1f, 1f));
 		
 		// Setup drag parameters
 		_screenDrag = new GameEntity();
-		_screenDrag.addBehavior(new ScreenDragBehavior(Global.Renderer.Width / 10f));
+		_screenDrag.addBehavior(new ScreenDragBehavior());
 		_entities.add(_screenDrag);
 
 		// setup option entities

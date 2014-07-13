@@ -22,7 +22,7 @@ public class RenderBehavior extends Behavior {
 	public void onUpdate(float updateRatio) {
 		Rectangle.sync(_entity.Attributes.Sprite.Area, _entity.Attributes.Area);
 		if (_entity.Attributes.Sprite.isValid())
-			Manager.Sprite.draw(_entity.Attributes.Sprite, _layer);	
+			Manager.Sprite.draw(_entity.Attributes.Sprite, _entity.ScreenLevel, _layer);	
 	}
 	
 	@Override 

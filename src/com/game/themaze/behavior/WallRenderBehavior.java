@@ -220,7 +220,7 @@ public class WallRenderBehavior extends Behavior {
 		for (int i = 0; i < count; i++) {
 			if (locationChange)
 				_sprites.get(i).Area.changePosition(xChange, yChange);
-			Manager.Sprite.draw(_sprites.get(i), _layer);
+			Manager.Sprite.draw(_sprites.get(i), _entity.ScreenLevel, _layer);
 		}
 	}
 

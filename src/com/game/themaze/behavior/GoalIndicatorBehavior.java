@@ -58,7 +58,7 @@ public class GoalIndicatorBehavior extends Behavior {
 				break;
 			}
 			_entity.Attributes.Sprite.Area.setCenter(_collision.Collision1);
-			Manager.Sprite.draw(_entity.Attributes.Sprite, TMSpriteLayer.FOREGROUND);
+			Manager.Sprite.draw(_entity.Attributes.Sprite, _entity.ScreenLevel, TMSpriteLayer.FOREGROUND);
 		}
 	}
 	

@@ -196,8 +196,8 @@ public class ScrollingTileBehavior extends Behavior {
 			break;
 		}
 		
-		Manager.Sprite.draw(_sprites.get(0), _layer);
-		Manager.Sprite.draw(_sprites.get(1), _layer);
+		Manager.Sprite.draw(_sprites.get(0), _entity.ScreenLevel, _layer);
+		Manager.Sprite.draw(_sprites.get(1), _entity.ScreenLevel, _layer);
 	}
 	
 	@Override

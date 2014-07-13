@@ -19,9 +19,37 @@ import com.game.loblib.utility.area.Vertex;
 import com.game.themaze.messaging.TMMessageType;
 
 public class ScreenDragBehavior extends Behavior implements ITouchListener, IMessageHandler {
+	public static class MomentumCutoff {
+		public static float Low = Global.Renderer.Width / 2500f;
+		public static float Normal = Global.Renderer.Width / 500f;
+		public static float High = Global.Renderer.Width / 100f;
+	}
 	
-	protected static final float MOMENTUM_CUTOFF = Global.Renderer.Width / 500f;
-	protected static final float MOMENTUM_MAX = Global.Renderer.Width / 24f;
+	public static class MaxMomentum {
+		public static float Off = 0f;
+		public static float Low = Global.Renderer.Width / 32f;
+		public static float Normal = Global.Renderer.Width / 24f;
+		public static float High = Global.Renderer.Width / 16f;
+	}
+	
+	public static class DragThreshold {
+		public static float Off = 0f;
+		public static float Low = Global.Renderer.Width / 32f;
+		public static float Normal = Global.Renderer.Width / 24f;
+		public static float High = Global.Renderer.Width / 16f;
+	}
+	
+	public static class Friction {
+		public static float Off = 0f;
+		public static float Low = 16f;
+		public static float Normal = 4f;
+		public static float High = 1f;
+	}
+	
+	protected float _momentumCutoff = Global.Renderer.Width / 500f;
+	protected float _maxMomentum = Global.Renderer.Width / 24f;
+	protected float _dragThreshold; // distance touch must move to began drag
+	protected float _friction;
 	
 	protected boolean _screenTouch = false; // true if screen is touched
 	protected boolean _dragging; // true if screen is touched and dragged past _dragThreshold
@@ -33,18 +61,60 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	protected Vertex _currentTouchLocation = new Vertex(); // latest location according to touch events (can change multiple times per update cycle)
 	protected Vertex _distanceChange = new Vertex(); // stores distance moved in last update
 	protected Vertex _momentum = new Vertex(); // used to calculate momentum movement when touch stops
-	protected float _dragThreshold; // distance touch must move to began drag
+	
 	protected final TouchData _touchData = new TouchData(this, AreaType.Rectangle, false, false, true, MotionType.ACTION_DOWN | MotionType.ACTION_MOVE | MotionType.ACTION_UP);
 	
 	
 	public ScreenDragBehavior() {
 		_type = TMBehaviorType.SCREEN_DRAG;
-		_dragThreshold = 500f;
+		_momentumCutoff = MomentumCutoff.Normal;
+		_maxMomentum = MaxMomentum.Normal;
+		_dragThreshold = DragThreshold.Normal;
+		_friction = Friction.Normal;
 	}
 	
-	public ScreenDragBehavior(float threshold) {
-		_type = TMBehaviorType.SCREEN_DRAG;
+	public float getMomentumCutoff() {
+		return _momentumCutoff;
+	}
+	
+	public void setMomentumCutoff(float cutoff) {
+		if (cutoff <= 0)
+			Logger.e(_tag, "Invalid cutoff");
+		
+		_momentumCutoff = cutoff;
+	}
+	
+	public float getMaxMomentum() {
+		return _maxMomentum;
+	}
+	
+	public void setMaxMomentum(float max) {
+		if (max <= 0)
+			Logger.e(_tag, "Invalid max momentum");
+		
+		_maxMomentum = max;
+	}
+	
+	public float getDragThreshold() {
+		return _dragThreshold;
+	}
+	
+	public void setDragThreshold(float threshold) {
+		if (threshold < 0)
+			Logger.e(_tag, "Invalid drag threshold");
+		
 		_dragThreshold = threshold;
+	}
+	
+	public float getFriction() {
+		return _friction;
+	}
+	
+	public void setFriction(float friction) {
+		if (friction <= 0)
+			Logger.e(_tag, "Invalid friction");
+		
+		_friction = friction;
 	}
 	
 	// Returns the distance dragged in the X direction since the previous update cycle
@@ -188,20 +258,23 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 				
 				Vertex.mul(_momentum, updateRatio, _distanceChange);
 				
-				if (_momentum.X > 0f)
-					newXMomentum = _momentum.X - ((float)Math.log(_momentum.X + 1f) * updateRatio / 4f);
-				else
-					newXMomentum = _momentum.X + ((float)Math.log(Math.abs(_momentum.X) + 1f) * updateRatio / 4f);
+				// don't reduce momentum if friction is 0
+				if (_friction > 0) {
+					if (_momentum.X > 0f)
+						newXMomentum = _momentum.X - ((float)Math.log(_momentum.X + 1f) * updateRatio / _friction);
+					else
+						newXMomentum = _momentum.X + ((float)Math.log(Math.abs(_momentum.X) + 1f) * updateRatio / _friction);
+					
+					if (_momentum.Y > 0f)
+						newYMomentum = _momentum.Y - ((float)Math.log(_momentum.Y + 1f) * updateRatio / _friction);
+					else
+						newYMomentum = _momentum.Y + ((float)Math.log(Math.abs(_momentum.Y) + 1f) * updateRatio / _friction);
+					
+					_momentum.X = newXMomentum;
+					_momentum.Y = newYMomentum;
+				}
 				
-				if (_momentum.Y > 0f)
-					newYMomentum = _momentum.Y - ((float)Math.log(_momentum.Y + 1f) * updateRatio / 4f);
-				else
-					newYMomentum = _momentum.Y + ((float)Math.log(Math.abs(_momentum.Y) + 1f) * updateRatio / 4f);
-				
-				_momentum.X = newXMomentum;
-				_momentum.Y = newYMomentum;
-				
-				if (Math.abs(_momentum.X) < MOMENTUM_CUTOFF && Math.abs(_momentum.Y) < MOMENTUM_CUTOFF) {
+				if (Math.abs(_momentum.X) < _momentumCutoff && Math.abs(_momentum.Y) < _momentumCutoff) {
 					_momentum.X = 0f;
 					_momentum.Y = 0f;
 					_distanceChange.X = 0f;
@@ -227,19 +300,21 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	protected void stopDragCheck() {
 		if (_dragging) {
 			// start slide if moving fast enough
-			if (Math.abs(_momentum.X) > MOMENTUM_CUTOFF && Math.abs(_momentum.Y) > MOMENTUM_CUTOFF) {
+			if (_momentumCutoff == 0 || (Math.abs(_momentum.X) > _momentumCutoff && Math.abs(_momentum.Y) > _momentumCutoff)) {
 				_sliding = true;
 				
-				// limit slide speed to maximum
-				if (_momentum.X > 0)
-					_momentum.X = Math.min(_momentum.X, MOMENTUM_MAX);
-				else
-					_momentum.X = Math.max(_momentum.X, -MOMENTUM_MAX);
-				
-				if (_momentum.Y > 0)
-					_momentum.Y = Math.min(_momentum.Y, MOMENTUM_MAX);
-				else
-					_momentum.Y = Math.max(_momentum.Y, -MOMENTUM_MAX);
+				// limit slide speed to maximum if _maxMomentum is set
+				if (_maxMomentum > 0) {
+					if (_momentum.X > 0)
+						_momentum.X = Math.min(_momentum.X, _maxMomentum);
+					else
+						_momentum.X = Math.max(_momentum.X, -_maxMomentum);
+					
+					if (_momentum.Y > 0)
+						_momentum.Y = Math.min(_momentum.Y, _maxMomentum);
+					else
+						_momentum.Y = Math.max(_momentum.Y, -_maxMomentum);
+				}
 			}
 			
 			_dragging = false;
