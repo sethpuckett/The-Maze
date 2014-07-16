@@ -8,12 +8,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import com.game.loblib.collision.ICollisionSender;
 import com.game.loblib.entity.GameEntity;
 import com.game.loblib.graphics.Image;
+import com.game.loblib.graphics.Sprite;
 import com.game.loblib.messaging.IMessageHandler;
 import com.game.loblib.messaging.Message;
 import com.game.loblib.messaging.MessageType;
 import com.game.loblib.utility.Direction;
+import com.game.loblib.utility.FadeType;
 import com.game.loblib.utility.Global;
 import com.game.loblib.utility.Logger;
 import com.game.loblib.utility.Manager;
@@ -25,19 +28,24 @@ import com.game.loblib.utility.area.AreaType;
 import com.game.loblib.utility.area.Vertex;
 import com.game.themaze.behavior.BlinkBehavior;
 import com.game.themaze.behavior.CameraDragBehavior;
+import com.game.themaze.behavior.CollisionSenderBehavior;
 import com.game.themaze.behavior.DoorBehavior;
 import com.game.themaze.behavior.EntityLinkBehavior;
+import com.game.themaze.behavior.FadeBehavior;
 import com.game.themaze.behavior.GameItemBehavior;
 import com.game.themaze.behavior.GoalIndicatorBehavior;
 import com.game.themaze.behavior.PatrolDestinationBehavior;
 import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.behavior.TimerBehavior;
+import com.game.themaze.behavior.WallRenderBehavior;
 import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.gameitem.GameItemActivationType;
 import com.game.themaze.gameitem.GameItemHelper;
 import com.game.themaze.gameitem.GameItemType;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
+import com.game.themaze.level.LevelSettings.LevelSettingInvisibleWallType;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.utility.DoorOpenType;
 import com.game.themaze.utility.DoorType;
@@ -96,7 +104,7 @@ public class Level implements IMessageHandler {
 		Manager.Message.unsubscribe(this, MessageType.ALL);
 	}
 	
-	public void unpause() {		
+	public final void unpause() {		
 		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | 
 				TMMessageType.DAMAGE | 
 				TMMessageType.TIMER_ALARM |
@@ -105,6 +113,19 @@ public class Level implements IMessageHandler {
 				TMMessageType.DISABLE_ITEM |
 				TMMessageType.TRIGGER_HIT |
 				TMMessageType.TRIGGER_RELEASED);
+		
+		// Setup invisible walls
+		switch (_settings.HazardEnableInvisibleWalls) {
+		case LevelSettingInvisibleWallType.Toggle:
+			Manager.Message.subscribe(this, MessageType.COLLISION);
+			break;
+		case LevelSettingInvisibleWallType.FadeSlow:
+		case LevelSettingInvisibleWallType.FadeFast:
+			Manager.Message.subscribe(this, MessageType.COLLISION | MessageType.FADE_IN_COMPLETE);
+			break;
+		}
+		
+		onUnpause();
 	}
 	
 	public void close() {
@@ -246,9 +267,34 @@ public class Level implements IMessageHandler {
 			_popupBlueKey.disableBehaviors();
 			_popupYellowKey.disableBehaviors();
 		}
+		else if (message.Type == MessageType.COLLISION) {
+			if (_settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.Toggle
+				|| _settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.FadeSlow
+				|| _settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.FadeFast) {
+				ICollisionSender sender = message.getData();
+				int wallCount = _mapWalls.getCount();
+				for (int i = 0; i < wallCount; i++) {
+					if (((CollisionSenderBehavior)_mapWalls.get(i).getBehavior(TMBehaviorType.COLLISION_SENDER)) == sender) {
+						((FadeBehavior)_mapWalls.get(i).getBehavior(TMBehaviorType.FADE)).fadeIn();
+						break;
+					}
+				}
+			}
+		}
+		else if (message.Type == MessageType.FADE_IN_COMPLETE) {
+			if (_settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.FadeSlow ||
+				_settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.FadeFast) {
+				GameEntity entity = message.getData();
+				((FadeBehavior)entity.getBehavior(TMBehaviorType.FADE)).fadeOut();
+			}
+		}
 	}
-	
-	public void init() {
+
+	public final void init(LevelSettings settings) {
+		// Override default settings if provided
+		if (settings != null)
+			_settings = settings;
+		
 		TMManager.Level.setCellWidth(_settings.CellWidth);
 		
 		int cellWidth = _settings.CellWidth;
@@ -259,17 +305,21 @@ public class Level implements IMessageHandler {
 		_doorTriggers = new FixedSizeArray<GameEntity>(64);
 		_entities = new FixedSizeArray<GameEntity>(2048);
 		
+		// either load from file or generate random maze
 		if (_settings.RandomizeMaze)
 			createRandomMaze();
 		else
 			loadFromFile(_settings.ResourceId);
 		
+		// add walls and spikes to entity set
 		_entities.addAll(_mapWalls);
 		_entities.addAll(_mapSpikes);
 		
+		// set camera to cover entire level area
 		Global.Camera.CoveredArea.setPosition(0, 0);
 		Global.Camera.CoveredArea.setSize(CELL_COUNT * cellWidth, CELL_COUNT * cellWidth);
 		
+		// create borders around entire level area
 		_borders = new FixedSizeArray<GameEntity>(4);
 		_borders.add(EntityHelper.wall(TMImage.WALL_HORIZONTAL_BLACK, 0 - (int)_offset.X, 0 - (int)_offset.Y, CELL_COUNT, true));
 		_borders.add(EntityHelper.wall(TMImage.WALL_HORIZONTAL_BLACK, 0 - (int)_offset.X, CELL_COUNT - 1 - (int)_offset.Y, CELL_COUNT, true));
@@ -279,6 +329,7 @@ public class Level implements IMessageHandler {
 		for (int i = 0; i < borderCount; i++)
 			_entities.add(_borders.get(i));
 		
+		// create player, goal, and control bar
 		_player = EntityHelper.player(_startLocation.X, _startLocation.Y, _playerDirection);	
 		_entities.add(_player);
 		_goal = EntityHelper.goal(_goalLocation.X, _goalLocation.Y, _goalDirection);
@@ -286,7 +337,9 @@ public class Level implements IMessageHandler {
 		_controlBar = EntityHelper.graphic(TMImage.CONTROL_BAR, TMSpriteLayer.UI_LOW, 
 				false, Global.Renderer.Width, TMManager.Level.getControlBarHeight(), false, 0, 0);
 		_entities.add(_controlBar);
-		if (!_settings.DisableCamera) {
+		
+		// setup peek mode
+		if (_settings.PeekType != LevelSettingPeekType.Off) {
 			_cameraButton = EntityHelper.button(TMImage.CAMERA_BTN, TMSpriteLayer.UI_HIGH,
 					false, Global.Renderer.Width / 6f, Global.Renderer.Width / 6f, false, 
 					Global.Renderer.Width - (11f * Global.Renderer.Width / 60f), Global.Renderer.Width / 120f, 
@@ -301,10 +354,13 @@ public class Level implements IMessageHandler {
 					Global.Renderer.Width - (11f * Global.Renderer.Width / 60f) - 1f, Global.Renderer.Width / 120f - 1f));
 		}
 		_entities.add(_cameraButton);
+		
+		// camera setter used for dragging in peek mode
 		_cameraSetter = new GameEntity();
 		_cameraSetter.addBehavior(new CameraDragBehavior());
 		_entities.add(_cameraSetter);
 		
+		// setup action button
 		if (_settings.EnableActionButton) {
 			_actionButton =  EntityHelper.button(TMImage.ACTION_BTN, TMSpriteLayer.UI_HIGH,
 					false, Global.Renderer.Width / 6f, Global.Renderer.Width / 6f, false, 
@@ -312,7 +368,8 @@ public class Level implements IMessageHandler {
 			_entities.add(_actionButton);
 		}
 		
-		if (!_settings.DisableGoalIndicator) {
+		// setup goal indicator
+		if (_settings.EnableGoalIndicator) {
 			_goalIndicator = new GameEntity();
 			_goalIndicator.Attributes.Sprite = Manager.Sprite.make(TMImage.GOAL_INDICATOR);
 			_goalIndicator.Attributes.Sprite.UseCamera = true;
@@ -320,6 +377,7 @@ public class Level implements IMessageHandler {
 			_entities.add(_goalIndicator);
 		}
 		
+		// setup game items
 		if (_settings.Item1 != GameItemType.UNKNOWN){
 			setGameItem(_settings.Item1, 1);
 			_entities.add(_itemButton1);
@@ -336,12 +394,14 @@ public class Level implements IMessageHandler {
 			_entities.add(_itemBorder3);
 		}
 		
+		// setup background
 		if (_settings.BackgroundImage != Image.NONE) {
 			float totalSize = CELL_COUNT * cellWidth;
 			_entities.add(EntityHelper.tiledGraphic(_settings.BackgroundImage, TMSpriteLayer.BACKGROUND1, 
 					totalSize / _settings.BackgroundTileCount, 0, 0, totalSize));
 		}
 		
+		// setup keys and key popups
 		_popupRedKey = EntityHelper.delayedGraphic(TMImage.POPUP_REDKEY, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width * .9f, Global.Renderer.Width * .1125f, true, Global.Renderer.Width / 2f, Global.Renderer.Height - Global.Renderer.Width * .2f,2000f,500f);
 		_popupBlueKey = EntityHelper.delayedGraphic(TMImage.POPUP_BLUEKEY, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width * .9f, Global.Renderer.Width * .1125f, true,Global.Renderer.Width / 2f,Global.Renderer.Height - Global.Renderer.Width * .2f,2000f,500f);
 		_popupYellowKey = EntityHelper.delayedGraphic(TMImage.POPUP_YELLOWKEY, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width * .9f, Global.Renderer.Width * .1125f, true, Global.Renderer.Width / 2f, Global.Renderer.Height - Global.Renderer.Width * .2f,2000f,500f);
@@ -349,7 +409,23 @@ public class Level implements IMessageHandler {
 		_entities.add(_popupBlueKey);
 		_entities.add(_popupYellowKey);
 		
+		// setup invisible walls
+		if (_settings.HazardEnableInvisibleWalls > LevelSettingInvisibleWallType.Off) {
+			// set fade out time, this will be ignored for non-fade types
+			float fadeOutTime = _settings.HazardEnableInvisibleWalls == LevelSettingInvisibleWallType.FadeSlow ? 30000f : 5000f;
+			int wallCount = _mapWalls.getCount();
+			for (int i = 0; i < wallCount; i++) {
+				GameEntity wall = _mapWalls.get(i);
+				FixedSizeArray<Sprite> wallSprites = ((WallRenderBehavior)wall.getBehavior(TMBehaviorType.WALL_RENDER)).getSprites();
+				wall.addBehavior(new FadeBehavior(250f, fadeOutTime, false, FadeType.SINGLE, wallSprites));
+			}
+			
+			Manager.Message.subscribe(this, MessageType.COLLISION |
+					MessageType.FADE_IN_COMPLETE);
+		}
+		
 		Global.Camera.Anchor = _player;
+		Global.Camera.TrackingEnabled = true;
 		Global.Camera.Threshold.setPosition(Global.Renderer.Width / 8f, Global.Renderer.Width / 6f);
 		Global.Camera.centerOnAnchor();
 		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | 
@@ -360,6 +436,9 @@ public class Level implements IMessageHandler {
 				TMMessageType.DISABLE_ITEM |
 				TMMessageType.TRIGGER_HIT |
 				TMMessageType.TRIGGER_RELEASED);
+		
+		// custom child class initialization
+		onInit();
 	}
 
 	////////////////////////
@@ -377,6 +456,16 @@ public class Level implements IMessageHandler {
 		// Nothing to do
 	}
 
+	// Should be overriden by child classes to handle custom initialization logic
+	protected void onInit() {
+		// Nothing to do here
+	}
+	
+	// Should be overriden by child classes to handle custom unpause logic
+	protected void onUnpause() {
+		// Nothing to do
+	}
+	
 	////////////////////////
 	// Public Final Methods
 	////////////////////////
@@ -547,7 +636,8 @@ public class Level implements IMessageHandler {
 	private void toggleCameraMode() {
 		if (_cameraMode) {
 			_cameraMode = false;
-			Global.Camera.Threshold.setPosition(Global.Renderer.Width / 6f, Global.Renderer.Width / 4f);
+			Global.Camera.TrackingEnabled = true;
+			Global.Camera.Threshold.setPosition(Global.Renderer.Width / 8f, Global.Renderer.Width / 6f);
 			_cameraButton.Attributes.Sprite.setFrame(0);
 			_cameraSetter.disableBehaviors();
 			
@@ -555,7 +645,13 @@ public class Level implements IMessageHandler {
 		}
 		else {
 			_cameraMode = true;
-			Global.Camera.Threshold.setPosition(Global.Renderer.Width, Global.Renderer.Width);
+			// if peek is not set to 'max' then limit the camera threshold
+			if (_settings.PeekType == LevelSettingPeekType.Normal) {
+				Global.Camera.TrackingEnabled = true;
+				Global.Camera.Threshold.setPosition(Global.Renderer.Width, Global.Renderer.Width);
+			}
+			else
+				Global.Camera.TrackingEnabled = false;
 			_cameraButton.Attributes.Sprite.setFrame(1);
 			_cameraSetter.Attributes.Area.setPosition(Global.Camera.CameraArea.getCenterX(), Global.Camera.CameraArea.getCenterY());
 			_cameraSetter.enableBehaviors();

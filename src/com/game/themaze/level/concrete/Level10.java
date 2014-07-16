@@ -73,8 +73,7 @@ public class Level10 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_trigger1 = EntityHelper.trigger(11, 43, 4, 4);
 		_trigger2 = EntityHelper.trigger(51, 58, 4, 4);
@@ -135,7 +134,7 @@ public class Level10 extends Level {
 	}	
 
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, MessageType.TIMER_ALARM | 
 				TMMessageType.DAMAGE);

@@ -23,6 +23,7 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 		public static float Low = Global.Renderer.Width / 2500f;
 		public static float Normal = Global.Renderer.Width / 500f;
 		public static float High = Global.Renderer.Width / 100f;
+		public static float Max = 0;
 	}
 	
 	public static class MaxMomentum {
@@ -46,8 +47,10 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 		public static float High = 1f;
 	}
 	
-	protected float _momentumCutoff = Global.Renderer.Width / 500f;
-	protected float _maxMomentum = Global.Renderer.Width / 24f;
+	protected float _momentumCutoff;
+	protected float _minXMomentum; 
+	protected float _minYMomentum; 
+	protected float _maxMomentum;
 	protected float _dragThreshold; // distance touch must move to began drag
 	protected float _friction;
 	
@@ -68,6 +71,8 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	public ScreenDragBehavior() {
 		_type = TMBehaviorType.SCREEN_DRAG;
 		_momentumCutoff = MomentumCutoff.Normal;
+		_minXMomentum = 0f;
+		_minYMomentum = 0f;
 		_maxMomentum = MaxMomentum.Normal;
 		_dragThreshold = DragThreshold.Normal;
 		_friction = Friction.Normal;
@@ -78,10 +83,26 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	}
 	
 	public void setMomentumCutoff(float cutoff) {
-		if (cutoff <= 0)
+		if (cutoff < 0)
 			Logger.e(_tag, "Invalid cutoff");
 		
 		_momentumCutoff = cutoff;
+	}
+	
+	public float getMinXMomentum() {
+		return _minXMomentum;
+	}
+	
+	public void setMinXMomentum(float min) {
+		_minXMomentum = min;
+	}
+	
+	public float getMinYMomentum() {
+		return _minYMomentum;
+	}
+	
+	public void setMinYMomentum(float min) {
+		_minYMomentum = min;
 	}
 	
 	public float getMaxMomentum() {
@@ -89,7 +110,7 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	}
 	
 	public void setMaxMomentum(float max) {
-		if (max <= 0)
+		if (max < 0)
 			Logger.e(_tag, "Invalid max momentum");
 		
 		_maxMomentum = max;
@@ -111,7 +132,7 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	}
 	
 	public void setFriction(float friction) {
-		if (friction <= 0)
+		if (friction < 0)
 			Logger.e(_tag, "Invalid friction");
 		
 		_friction = friction;
@@ -237,7 +258,7 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 					Vertex.sub(_currentTouchLocation, _currentLocation, _distanceChange);
 					Vertex.mul(_distanceChange, totalRatio, _momentum);
 					Area.sync(_currentLocation, _currentTouchLocation);
-					_touchDelay = 0f;
+					_touchDelay = (50f * updateRatio) / 3f;
 					_touchUpdate = false;
 				}
 				catch (UndefinedVertexException e) {
@@ -300,8 +321,23 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 	protected void stopDragCheck() {
 		if (_dragging) {
 			// start slide if moving fast enough
-			if (_momentumCutoff == 0 || (Math.abs(_momentum.X) > _momentumCutoff && Math.abs(_momentum.Y) > _momentumCutoff)) {
+			if (_momentumCutoff != 0 && Math.abs(_momentum.X) > _momentumCutoff && Math.abs(_momentum.Y) > _momentumCutoff) {
 				_sliding = true;
+				
+				// limit slide speed to minimum if minMomentum values are set
+				if (Math.abs(_momentum.X) < _minXMomentum) {
+					if (_momentum.X > 0)
+						_momentum.X = _minXMomentum;
+					else
+						_momentum.X = -_minXMomentum;
+				}
+				
+				if (Math.abs(_momentum.Y) < _minYMomentum) {
+					if (_momentum.Y > 0)
+						_momentum.Y = _minYMomentum;
+					else
+						_momentum.Y = -_minYMomentum;
+				}
 				
 				// limit slide speed to maximum if _maxMomentum is set
 				if (_maxMomentum > 0) {
@@ -331,7 +367,7 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 		case MotionType.ACTION_DOWN:
 			_screenTouch = true;
 			_touchUpdate = true;
-			_touchDelay = 0f;
+			_touchDelay = 16f;
 			Area.sync(_currentTouchLocation, event.ScreenCoords);
 			Area.sync(_startLocation, event.ScreenCoords);
 			break;
@@ -340,6 +376,8 @@ public class ScreenDragBehavior extends Behavior implements ITouchListener, IMes
 				try {
 					if (!_dragging && Vertex.distanceSquared(event.ScreenCoords, _startLocation) >= Math.pow(_dragThreshold, 2f)) {
 						_dragging = true;
+						_sliding = false;
+						_momentum.setPosition(0f, 0f);
 						Area.sync(_currentLocation, event.ScreenCoords);
 						Manager.Message.sendMessage(MessageType.DRAG_START, _entity);	
 					}

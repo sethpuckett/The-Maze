@@ -41,8 +41,7 @@ public class Level14 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 		
 		_spikes = new FixedSizeArray<GameEntity>(10);
@@ -422,7 +421,7 @@ public class Level14 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		
 		Manager.Message.subscribe(this, TMMessageType.DESTINATION_REACHED);

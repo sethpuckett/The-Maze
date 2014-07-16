@@ -22,8 +22,7 @@ public class Level09 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();//18 76
+	public void onInit() {
 
 		_entities.addAll(spikeRing(18, 75, false, Direction.RIGHT));
 		//_entities.addAll(stationaryRing(16, 73, Direction.UP, Direction.DOWN));

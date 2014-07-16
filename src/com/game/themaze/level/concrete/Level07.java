@@ -21,8 +21,7 @@ public class Level07 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 		
 		_spikeAnchors = new FixedSizeArray<GameEntity>(45);

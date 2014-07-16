@@ -41,8 +41,7 @@ public class Level19 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		Sprite red = Manager.Sprite.make(TMImage.RED);
 		red.Area.setSize(Global.Renderer.Width, Global.Renderer.Height - TMManager.Level.getControlBarHeight());
@@ -79,7 +78,7 @@ public class Level19 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, MessageType.TIMER_ALARM | MessageType.FADE_STATE_CHANGE);
 	}

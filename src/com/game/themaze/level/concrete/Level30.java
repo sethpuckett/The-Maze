@@ -20,8 +20,7 @@ public class Level30 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_entities.add(EntityHelper.tiledGraphic(TMImage.BACKGROUND_DIRT_GRAY, TMSpriteLayer.BACKGROUND1, 500f, 0, 0, 4000f));
 		
@@ -50,7 +49,7 @@ public class Level30 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | MessageType.COLLISION);
 	}

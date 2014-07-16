@@ -4,10 +4,12 @@ import com.game.loblib.messaging.Message;
 import com.game.loblib.screen.Screen;
 import com.game.loblib.utility.ButtonControlType;
 import com.game.loblib.utility.Global;
+import com.game.loblib.utility.Logger;
 import com.game.loblib.utility.Manager;
 import com.game.loblib.utility.android.FixedSizeArray;
 import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings;
 import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.sound.TMSound;
 import com.game.themaze.utility.TMManager;
@@ -149,7 +151,16 @@ public class LevelScreen extends Screen {
 
 	@Override
 	public void onInit(Object input) {
-		TMManager.Level.loadLevel();
+		LevelSettings settings = null;
+		try {
+			if (input != null)
+				settings = (LevelSettings)input;
+		}
+		catch (ClassCastException e) {
+			Logger.e(_tag, "Input should be of type LevelSettings");
+		}
+		
+		TMManager.Level.loadLevel(settings);
 		Global.Camera.YOffset = TMManager.Level.getControlBarHeight();
 		_entities.addAll(TMManager.Level.getLevelEntities());
 		Manager.Message.subscribe(this, TMMessageType.GOAL_REACHED | TMMessageType.PLAYER_DEATH);

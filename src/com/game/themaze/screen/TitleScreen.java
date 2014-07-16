@@ -31,6 +31,7 @@ public class TitleScreen extends Screen {
 	protected GameEntity _continueButton;
 	protected GameEntity _creditsButton;
 	protected GameEntity _soundButton;
+	protected GameEntity _debugButton;
 	
 	protected boolean _buttonClicked;
 	protected boolean _newGameClicked;
@@ -63,6 +64,10 @@ public class TitleScreen extends Screen {
 				_buttonClicked = true;
 				_creditsClicked = true;
 				((TweenBehavior)_creditsButton.getBehavior(TMBehaviorType.TWEEN)).setTweenTime(500);
+			}
+			else if (entity == _debugButton) {
+				_screenData.setCode(TMScreenCode.TRANSITION);
+				_screenData.setActionScreen(TMScreenType.DEBUG);
 			}
 			else if (entity == _soundButton)
 				toggleSound();
@@ -132,6 +137,9 @@ public class TitleScreen extends Screen {
 		_soundButton = soundButton();
 		_entities.add(_soundButton);
 		
+		_debugButton = EntityHelper.button(TMImage.DEBUG_BUTTON, TMSpriteLayer.UI_LOW, false, Global.Renderer.Width / 2.5f, Global.Renderer.Width / 5f, true, Global.Renderer.Width / 2f, Global.Renderer.Height / 2f - Global.Renderer.Width / 2f, AreaType.Rectangle);
+		_entities.add(_debugButton);
+		
 		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | 
 				MessageType.ANIMATION_FINISHED | 
 				MessageType.TWEEN_FINISHED);
@@ -147,6 +155,7 @@ public class TitleScreen extends Screen {
 			_newGameButton.enableBehaviors(BehaviorType.ALL & ~TMBehaviorType.TWEEN);
 		_creditsButton.enableBehaviors(BehaviorType.ALL & ~TMBehaviorType.TWEEN);
 		_soundButton.enableBehaviors(BehaviorType.ALL & ~TMBehaviorType.TWEEN);
+		_debugButton.enableBehaviors();
 	}
 
 	@Override

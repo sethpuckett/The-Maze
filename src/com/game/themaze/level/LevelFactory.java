@@ -1,6 +1,7 @@
 package com.game.themaze.level;
 
 import com.game.loblib.utility.Logger;
+import com.game.themaze.level.concrete.Level01;
 import com.game.themaze.level.concrete.Level02;
 import com.game.themaze.level.concrete.Level03;
 import com.game.themaze.level.concrete.Level04;
@@ -39,7 +40,8 @@ public class LevelFactory {
 	
 	public static Level create(int level) {
 		switch (level) {
-		case 1: return new RandomLevel();
+		case 0: return new RandomLevel();
+		case 1: return new Level01();
 		case 2: return new Level02();
 		case 3: return new Level03();
 		case 4: return new Level04();

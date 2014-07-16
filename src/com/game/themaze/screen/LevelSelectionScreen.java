@@ -7,19 +7,21 @@ import com.game.loblib.screen.Screen;
 import com.game.loblib.utility.ButtonControlType;
 import com.game.loblib.utility.Direction;
 import com.game.loblib.utility.Global;
+import com.game.loblib.utility.Logger;
 import com.game.loblib.utility.Manager;
 import com.game.loblib.utility.MathHelper;
 import com.game.loblib.utility.android.FixedSizeArray;
 import com.game.loblib.utility.area.AreaType;
 import com.game.themaze.behavior.ScreenDragBehavior;
-import com.game.themaze.behavior.ScrollingTileBehavior;
-import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.behavior.ScreenDragBehavior.DragThreshold;
 import com.game.themaze.behavior.ScreenDragBehavior.Friction;
-import com.game.themaze.behavior.ScreenDragBehavior.MomentumCutoff;
+import com.game.themaze.behavior.ScreenDragBehavior.MaxMomentum;
+import com.game.themaze.behavior.ScrollingTileBehavior;
+import com.game.themaze.behavior.TMBehaviorType;
 import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
+import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.sound.TMSound;
 import com.game.themaze.utility.Debug;
 import com.game.themaze.utility.TMGlobal;
@@ -30,6 +32,8 @@ public class LevelSelectionScreen extends Screen {
 	protected int _currentChapter;
 	protected boolean _buttonDown;
 	protected int _maxChapter;
+	protected boolean _slideBack;
+	protected int _slideDirection;
 	
 	protected GameEntity _cameraRail;
 	protected GameEntity _background;
@@ -52,9 +56,10 @@ public class LevelSelectionScreen extends Screen {
 		
 		_screenDrag = new GameEntity();
 		_screenDrag.addBehavior(new ScreenDragBehavior());
-		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setFriction(Friction.Off);
 		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setDragThreshold(DragThreshold.Low);
-		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setMomentumCutoff(MomentumCutoff.Low);
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setFriction(Friction.Off);
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setMinXMomentum(MaxMomentum.High);
+		((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).setMaxMomentum(MaxMomentum.High);
 		_entities.add(_screenDrag);
 
 		float screenX = Global.Renderer.Width;
@@ -167,33 +172,51 @@ public class LevelSelectionScreen extends Screen {
 		if (Debug.UnlockAllLevels)
 			_maxChapter = 6;
 		
-		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED);
+		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | TMMessageType.DRAG_START | TMMessageType.DRAG_STOP);
 	}
 
 	@Override
 	public void onActiveUpdate(float updateRatio) {
-		float xChange = ((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).getCurrentXDragDistance();
-		if (xChange < 0 && _cameraRail.Attributes.Area.Position.X + xChange >= getCameraStopUp()) {
-			// if sliding stop at new chapter
-			if (((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).isSliding()) {
-				((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).stopSliding();
-				xChange = getCameraStopUp() - _cameraRail.Attributes.Area.Position.X;
-			}
+		float xChange = 0f;
+		
+		if (!_slideBack) {
+			xChange = ((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).getCurrentXDragDistance();
+			if (xChange != 0f)
+				_slideDirection = xChange > 0 ? Direction.LEFT : Direction.RIGHT;
+		}
+		else {
+			if (_slideDirection == Direction.LEFT)
+				xChange = Global.Renderer.Width / 1000f;
+			else
+				xChange = -Global.Renderer.Width / 1000f;
+		}
 			
-			_currentChapter++;
-			TMGlobal.TMSettings.setCurrentChapter(_currentChapter);
+		
+		if (xChange < 0 && _cameraRail.Attributes.Area.Position.X + xChange >= getCameraStopUp()) {
+			if (_currentChapter < 6) {
+				xChange = getCameraStopUp() - _cameraRail.Attributes.Area.Position.X;
+				_currentChapter++;
+				TMGlobal.TMSettings.setCurrentChapter(_currentChapter);
+			}
+			else
+				xChange = 0f;
+			
+			_slideBack = false;
+			((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).stopSliding();
 		}
 		else if (xChange > 0 && _cameraRail.Attributes.Area.Position.X - xChange <= getCameraStopDown()) {
-			// if sliding stop at new chapter
-			if (((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).isSliding()) {
-				((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).stopSliding();
+			if (_currentChapter > 0) {
 				xChange = _cameraRail.Attributes.Area.Position.X - getCameraStopDown();
+				_currentChapter--;
+				TMGlobal.TMSettings.setCurrentChapter(_currentChapter);
 			}
+			else
+				xChange = 0f;
 			
-			_currentChapter--;
-			TMGlobal.TMSettings.setCurrentChapter(_currentChapter);
+			_slideBack = false;
+			((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).stopSliding();
 		}
-		
+
 		_cameraRail.Attributes.Area.Position.X -= xChange;
 		_cameraRail.Attributes.Area.Position.X = MathHelper.clamp(Global.Renderer.Width / 2f, getMaxScrollForChapter(_maxChapter), _cameraRail.Attributes.Area.Position.X);
 	}
@@ -205,7 +228,7 @@ public class LevelSelectionScreen extends Screen {
 
 	@Override
 	protected void onUnpause() {
-		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED);
+		Manager.Message.subscribe(this, MessageType.BUTTON_CLICKED | TMMessageType.DRAG_START | TMMessageType.DRAG_STOP);
 	}
 
 	@Override
@@ -234,6 +257,13 @@ public class LevelSelectionScreen extends Screen {
 				_screenData.setCode(TMScreenCode.TRANSITION);
 				_screenData.setActionScreen(TMScreenType.JOURNAL);
 			}
+		}
+		else if (message.Type == MessageType.DRAG_STOP) {
+			if (!((ScreenDragBehavior)_screenDrag.getBehavior(TMBehaviorType.SCREEN_DRAG)).isSliding())
+				_slideBack = true;
+		}
+		else if (message.Type == MessageType.DRAG_START) {
+			_slideBack = false;
 		}
 
 	}
@@ -282,22 +312,22 @@ public class LevelSelectionScreen extends Screen {
 			stop = Global.Renderer.Width / 2f;
 			break;
 		case 1:
-			stop = Global.Renderer.Width / 2f;
-			break;
-		case 2:
 			stop = Global.Renderer.Width + Global.Renderer.Width / 2f;
 			break;
-		case 3:
+		case 2:
 			stop = (Global.Renderer.Width * 2f) + Global.Renderer.Width / 2f;
 			break;
-		case 4:
+		case 3:
 			stop = (Global.Renderer.Width * 3f) + Global.Renderer.Width / 2f;
 			break;
-		case 5:
+		case 4:
 			stop = (Global.Renderer.Width * 4f) + Global.Renderer.Width / 2f;
 			break;
-		case 6:
+		case 5:
 			stop = (Global.Renderer.Width * 5f) + Global.Renderer.Width / 2f;
+			break;
+		case 6:
+			stop = (Global.Renderer.Width * 6f) + Global.Renderer.Width / 2f;
 			break;
 		}
 		return stop;
@@ -334,7 +364,7 @@ public class LevelSelectionScreen extends Screen {
 	protected float getLockPosition(float oldPos, float newPos) {
 		float stop = 0f;
 		float currentStop = 0f;
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 7; i++) {
 			switch (i) {
 			case 0:
 				currentStop =Global.Renderer.Width / 2f;
@@ -413,6 +443,77 @@ public class LevelSelectionScreen extends Screen {
 			break;
 		}
 		return max;
+	}
+	
+	protected int getNearestChapter(float xPosition) {
+		if (xPosition < Global.Renderer.Width)
+			return 0;
+		else if (xPosition < (Global.Renderer.Width * 2f))
+			return 1;
+		else if (xPosition < (Global.Renderer.Width * 3f))
+			return 2;
+		else if (xPosition < (Global.Renderer.Width * 4f))
+			return 3;
+		else if (xPosition < (Global.Renderer.Width * 5f))
+			return 4;
+		else if (xPosition < (Global.Renderer.Width * 6f))
+			return 5;
+		else if (xPosition < (Global.Renderer.Width * 7f))
+			return 6;
+		
+		Logger.e(_tag, "Invalid chapter");
+		return -1;
+	}
+	
+	protected int getDirectionToChapter(float xPosition, int chapter) {
+		int direction = Direction.UNKNOWN;
+		
+		switch (chapter) {
+		case 0:
+			if (xPosition > Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 1:
+			if (xPosition > (Global.Renderer.Width) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 2:
+			if (xPosition > (Global.Renderer.Width * 2f) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 3:
+			if (xPosition > (Global.Renderer.Width * 3f) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 4:
+			if (xPosition > (Global.Renderer.Width * 4f) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 5:
+			if (xPosition > (Global.Renderer.Width * 5f) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		case 6:
+			if (xPosition > (Global.Renderer.Width * 6f) + Global.Renderer.Width / 2f)
+				direction = Direction.LEFT;
+			else
+				direction = Direction.RIGHT;
+			break;
+		}
+		
+		return direction;
 	}
 	
 	protected GameEntity levelSelectButton(int level, boolean enabled) {

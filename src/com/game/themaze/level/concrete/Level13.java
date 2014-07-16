@@ -26,8 +26,7 @@ public class Level13 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		float cellWidth = TMManager.Level.getCellWidth();
 		
 		FixedSizeArray<GameEntity> arr1 = new FixedSizeArray<GameEntity>(11);

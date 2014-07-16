@@ -27,8 +27,7 @@ public class Level16 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		int wallCount = _mapWalls.getCount();
 		for (int i = 0; i < wallCount; i++) {
@@ -42,7 +41,7 @@ public class Level16 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		Manager.Message.subscribe(this, MessageType.COLLISION |
 				MessageType.FADE_IN_COMPLETE);
 	}

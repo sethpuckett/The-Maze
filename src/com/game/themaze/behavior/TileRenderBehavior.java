@@ -30,7 +30,7 @@ public class TileRenderBehavior extends Behavior {
 			Sprite sprite = Manager.Sprite.make(image);
 			sprite.Area.MaintainCenter = false;
 			sprite.Area.setPosition(xPos, yPos);
-			sprite.Area.setSize(tileLength + 1, tileLength + 1);
+			sprite.Area.setSize(tileLength + 2, tileLength + 2);
 			_sprites.add(sprite);
 			
 			xPos += tileLength;

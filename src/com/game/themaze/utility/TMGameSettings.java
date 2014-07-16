@@ -38,7 +38,7 @@ public class TMGameSettings extends GameSettings {
 
 	public void setCurrentChapter(int chapter) {
 		if (chapter < 0 || chapter > 6) {
-			Logger.e(_tag, "Chapter out of range");
+			Logger.e(_tag, "Chapter out of range: " + String.valueOf(chapter));
 			return;
 		}
 		Editor editor = _prefs.edit();
@@ -50,21 +50,16 @@ public class TMGameSettings extends GameSettings {
 		return _prefs.getInt("current_chapter", 0);
 	}
 
-	public int getMinZoom() {
-		return (int)(Global.Renderer.Width / 32f);
-	}
+	public final static int MAZE_SIZE_SMALL = 58;
+	public final static int MAZE_SIZE_MEDIUM = 76;
+	public final static int MAZE_SIZE_LARGE = 94;
 	
-	public int getMedZoom() {
-		return (int)(Global.Renderer.Width / 16f);
-	}
+	public final static int GetZoomMinimum() { return (int)(Global.Renderer.Width / 30f); }
+	public final static int GetZoomMedium() { return (int)(Global.Renderer.Width / 20f); }
+	public final static int GetZoomMaximum() { return (int)(Global.Renderer.Width / 15f); }
 	
-	public int getMaxZoom() {
-		return (int)(Global.Renderer.Width / 8f);
-	}
+	public final static int BACKGROUND_TILE_COUNT_MINIMUM = 9;
+	public final static int BACKGROUND_TILE_COUNT_MEDIUM = 12;
+	public final static int BACKGROUND_TILE_COUNT_MAXIMUM = 18;
 	
-	public final static int SMALL_MAZE_SIZE = 58;
-	
-	public final static int MEDIUM_MAZE_SIZE = 76;
-	
-	public final static int LARGE_MAZE_SIZE = 94;
 }

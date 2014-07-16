@@ -6,7 +6,6 @@ import com.game.loblib.messaging.MessageType;
 import com.game.loblib.screen.Screen;
 import com.game.loblib.screen.ScreenCode;
 import com.game.loblib.utility.ButtonControlType;
-import com.game.loblib.utility.Direction;
 import com.game.loblib.utility.Global;
 import com.game.loblib.utility.Logger;
 import com.game.loblib.utility.Manager;
@@ -78,7 +77,7 @@ public class SelectListScreen extends Screen {
 //					1f, 
 //					1f, 
 //					1f);
-			GameEntity button = EntityHelper.button(TMImage.BACK_BUTTON, TMSpriteLayer.UI_LOW, false, BUTTON_HEIGHT * 2f, BUTTON_HEIGHT, true, Global.Renderer.Width / 2f, Global.Renderer.Height - BUTTON_BUFFER - (BUTTON_HEIGHT + BUTTON_BUFFER) * i, AreaType.Rectangle);
+			GameEntity button = EntityHelper.button(TMImage.BACK_BUTTON, TMSpriteLayer.UI_LOW, false, BUTTON_HEIGHT * 2f, BUTTON_HEIGHT, true, Global.Renderer.Width / 2f, Global.Renderer.Height - (BUTTON_BUFFER + BUTTON_HEIGHT) - (BUTTON_HEIGHT + BUTTON_BUFFER) * i, AreaType.Rectangle);
 			
 			_optionButtons.add(button);
 		}

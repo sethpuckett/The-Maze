@@ -26,8 +26,7 @@ public class Level02 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_triggers = new FixedSizeArray<GameEntity>(20);
 		_triggers.add(EntityHelper.trigger(19, 42, 2, 2));

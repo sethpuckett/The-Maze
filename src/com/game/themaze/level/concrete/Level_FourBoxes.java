@@ -58,8 +58,7 @@ public class Level_FourBoxes extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_box1Trigger = EntityHelper.trigger(15, 32, 4, 4);
 		_box2Trigger = EntityHelper.trigger(33, 32, 4, 4);

@@ -22,8 +22,7 @@ public class Level03 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 		
 		_entities.add(EntityHelper.gameItem(54, 52, GameItemType.RED_KEY));

@@ -1,12 +1,10 @@
 package com.game.themaze.behavior;
 
 import com.game.loblib.behavior.Behavior;
-import com.game.loblib.graphics.Sprite;
 import com.game.loblib.utility.Manager;
 import com.game.loblib.utility.area.Rectangle;
 
 public class RenderBehavior extends Behavior {
-	protected Sprite _sprite;
 	protected int _layer;
 	
 	public RenderBehavior(int layer) {

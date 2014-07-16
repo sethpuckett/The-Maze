@@ -12,6 +12,7 @@ import com.game.themaze.collision.TMCollisionLayer;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.utility.TMManager;
 
 // Three guys - switch
@@ -28,13 +29,12 @@ public class Level26 extends Level {
 		_settings.ResourceId = R.raw.level_07;
 		_settings.CellWidth = (int)(Global.Renderer.Width / 32f);
 		_settings.EnableActionButton = true;
-		_settings.DisableCamera = true;
+		_settings.PeekType = LevelSettingPeekType.Off;
 		_settings.BackgroundImage = TMImage.BACKGROUND_TILE_BLACK;
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		float cellWidth = TMManager.Level.getCellWidth();
 		

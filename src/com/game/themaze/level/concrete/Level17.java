@@ -44,8 +44,7 @@ public class Level17 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 		
 		GameEntity fadeChain1 = new GameEntity();
@@ -323,7 +322,7 @@ public class Level17 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, TMMessageType.DESTINATION_REACHED | TMMessageType.PATROL_START |
 				MessageType.TIMER_ALARM);

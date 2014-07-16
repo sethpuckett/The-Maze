@@ -15,6 +15,33 @@ public class TMImage extends Image {
 		public final static int SOUND_BUTTON	= 206;
 		public final static int SCROLLING_STONE_WALL = 207;
 		public final static int TITLE_LOGO = 208;
+		public final static int DEBUG_BUTTON = 209;
+		
+		
+		// Debug Menu
+		public final static int DEBUG_BUTTON_CHANGE = 300;
+		public final static int DEBUG_TEXT_MAZE_SIZE_LABEL = 301;
+		public final static int DEBUG_TEXT_MAZE_SIZE_VALUE_SMALL = 302;
+		public final static int DEBUG_TEXT_MAZE_SIZE_VALUE_MEDIUM = 303;
+		public final static int DEBUG_TEXT_MAZE_SIZE_VALUE_LARGE = 304;
+		public final static int DEBUG_TEXT_ZOOM_LABEL = 305;
+		public final static int DEBUG_TEXT_ZOOM_VALUE_MINIMUM = 306;
+		public final static int DEBUG_TEXT_ZOOM_VALUE_MEDIUM = 307;
+		public final static int DEBUG_TEXT_ZOOM_VALUE_MAXIMUM = 308;
+		public final static int DEBUG_TEXT_PEEK_LABEL = 309;
+		public final static int DEBUG_TEXT_PEEK_VALUE_OFF = 310;
+		public final static int DEBUG_TEXT_PEEK_VALUE_NORMAL = 311;
+		public final static int DEBUG_TEXT_PEEK_VALUE_MAXIMUM = 312;
+		public final static int DEBUG_TEXT_GOAL_INDICATOR_LABEL = 313;
+		public final static int DEBUG_TEXT_GOAL_INDICATOR_VALUE_ON = 314;
+		public final static int DEBUG_TEXT_GOAL_INDICATOR_VALUE_OFF = 315;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_LABEL = 316;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_VALUE_OFF = 317;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_VALUE_TOGGLE = 318;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_VALUE_FADE_SLOW = 319;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_VALUE_FADE_FAST = 320;
+		public final static int DEBUG_TEXT_INVISIBLE_WALLS_VALUE_ALWAYS = 321;
+		
 		
 		// Credits
 		public final static int CREDITS			= 400;

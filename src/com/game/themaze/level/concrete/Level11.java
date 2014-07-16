@@ -13,6 +13,7 @@ import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.utility.TMManager;
 
 // Backwards movement
@@ -28,12 +29,11 @@ public class Level11 extends Level {
 		_settings.CellWidth = (int)(Global.Renderer.Width / 12f);
 		_settings.BackgroundImage = TMImage.BACKGROUND_COPPER;
 		_settings.EnableActionButton = true;
-		_settings.DisableCamera = true;
+		_settings.PeekType = LevelSettingPeekType.Off;
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 
 		_player.removeBehaviors(TMBehaviorType.TOUCH_DESTINATION);

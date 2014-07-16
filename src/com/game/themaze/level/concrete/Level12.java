@@ -49,8 +49,7 @@ public class Level12 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_windStarted = false;
 
@@ -101,7 +100,7 @@ public class Level12 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, MessageType.TIMER_ALARM | MessageType.TRIGGER_HIT  | TMMessageType.DAMAGE);
 	}

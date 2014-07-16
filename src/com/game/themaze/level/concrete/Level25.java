@@ -11,6 +11,7 @@ import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.utility.TMManager;
 
 // Three guys - simultaneous
@@ -26,13 +27,12 @@ public class Level25 extends Level {
 	public Level25() {
 		_settings.ResourceId = R.raw.level_06;
 		_settings.CellWidth = (int)(Global.Renderer.Width / 32f);
-		_settings.DisableCamera = true;
+		_settings.PeekType = LevelSettingPeekType.Off;
 		_settings.BackgroundImage = TMImage.BACKGROUND_TILE_BLACK;
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		float cellWidth = TMManager.Level.getCellWidth();
 		

@@ -24,8 +24,7 @@ public class Level06 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		int cellWidth = TMManager.Level.getCellWidth();
 		

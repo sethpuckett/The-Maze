@@ -19,6 +19,7 @@ import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.messaging.TMMessageType;
 import com.game.themaze.utility.TMManager;
 
@@ -45,12 +46,11 @@ public class Level20 extends Level {
 		_settings.CellWidth = (int)(Global.Renderer.Width / 16f);
 		_settings.BackgroundImage = TMImage.BACKGROUND_SAND;
 		_settings.EnableActionButton = true;
-		_settings.DisableCamera = true;
+		_settings.PeekType = LevelSettingPeekType.Off;
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		float cellWidth = TMManager.Level.getCellWidth();
 		
 		_fadeChainActive = false;
@@ -163,7 +163,7 @@ public class Level20 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, TMMessageType.TRIGGER_PATH_FAIL | TMMessageType.FADE_CHAIN_COMPLETE);
 	}

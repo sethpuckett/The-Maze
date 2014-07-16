@@ -18,8 +18,7 @@ public class Level15 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 
 		_entities.add(EntityHelper.scrollingGraphic(TMImage.BLACK_HOLES, TMSpriteLayer.FOREGROUND, Direction.LEFT, 1f, 0f, Global.Renderer.Width * 1.8f, true));
 	}

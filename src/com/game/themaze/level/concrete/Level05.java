@@ -30,8 +30,7 @@ public class Level05 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		int cellWidth = TMManager.Level.getCellWidth();
 		
 		float slowSpeed = (float)cellWidth / 15f;
@@ -108,7 +107,7 @@ public class Level05 extends Level {
 	}
 	
 	@Override
-	public void unpause() {
+	public void onUnpause() {
 		super.unpause();
 		Manager.Message.subscribe(this, TMMessageType.DESTINATION_REACHED);
 	}

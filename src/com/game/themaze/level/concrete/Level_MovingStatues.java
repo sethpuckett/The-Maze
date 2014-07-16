@@ -36,8 +36,7 @@ public class Level_MovingStatues extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_entranceSide = true;
 		_entranceSideChange = false;
@@ -119,8 +118,7 @@ public class Level_MovingStatues extends Level {
 	}
 	
 	@Override
-	public void unpause() {
-		super.unpause();
+	public void onUnpause() {
 		Manager.Message.subscribe(this, MessageType.TRIGGER_HIT | MessageType.TRIGGER_RELEASED);
 	}	
 	

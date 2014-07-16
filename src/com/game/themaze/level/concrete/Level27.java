@@ -21,8 +21,7 @@ public class Level27 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		float cellWidth = TMManager.Level.getCellWidth();
 		
 		GameEntity wheelAnchor = EntityHelper.patrolAnchor(10, 84, cellWidth / 35f, 0, 0, PatrolType.ONCE_THROUGH);

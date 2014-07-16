@@ -33,13 +33,17 @@ public class LevelManager {
 	}
 	
 	public void loadLevel() {
+		loadLevel(null);
+	}
+	
+	public void loadLevel(LevelSettings settings) {
 		if (_levelActive)
 			Logger.e(_tag, "cannot load level; must close current level");
-		else if (_currentLevel <= 0 || _currentLevel > MAX_LEVELS)
+		else if (_currentLevel < 0 || _currentLevel > MAX_LEVELS)
 			Logger.e(_tag, "cannot start; level not set");
 		else {
 			_loadedLevel = LevelFactory.create(_currentLevel);
-			_loadedLevel.init();
+			_loadedLevel.init(settings);
 		}
 		
 	}

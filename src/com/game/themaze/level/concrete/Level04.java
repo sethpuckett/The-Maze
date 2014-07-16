@@ -14,6 +14,7 @@ import com.game.themaze.entity.EntityHelper;
 import com.game.themaze.graphics.TMImage;
 import com.game.themaze.graphics.TMSpriteLayer;
 import com.game.themaze.level.Level;
+import com.game.themaze.level.LevelSettings.LevelSettingPeekType;
 import com.game.themaze.utility.TMManager;
 
 // Introduction - puzzle
@@ -30,8 +31,8 @@ public class Level04 extends Level {
 	public Level04() {
 		_settings.ResourceId = R.raw.level_04;
 		_settings.CellWidth = (int)(Global.Renderer.Width / 20f);
-		_settings.DisableCamera = true;
-		_settings.DisableGoalIndicator = true;
+		_settings.PeekType = LevelSettingPeekType.Off;
+		_settings.EnableGoalIndicator = false;
 		_settings.BackgroundImage = TMImage.WHITE;
 		_settings.BackgroundTileCount = 1;
 		_settings.WallSprites.setSimpleImages(TMImage.WALL_HORIZONTAL_BLACK, 
@@ -39,8 +40,7 @@ public class Level04 extends Level {
 	}
 	
 	@Override
-	public void init() {
-		super.init();
+	public void onInit() {
 		
 		_runes = new FixedSizeArray<GameEntity>(14);
 		_runes.add(EntityHelper.levelGraphic(TMImage.LEVEL_04_RUNE_C, TMSpriteLayer.BACKGROUND2, 28, 36, 2, 2));

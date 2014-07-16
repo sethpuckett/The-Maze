@@ -909,6 +909,98 @@ public class TMSpriteHelper extends SpriteHelper {
 			s.Texture.ResourceId = R.drawable.spike_yellow;
 			s.Frames = FrameHelper._128x128;
 			break;
+		case TMImage.DEBUG_BUTTON:
+			s.Texture.ResourceId = R.drawable.menu_debug_button;
+			s.Frames = FrameHelper._256x128;
+			break;
+		case TMImage.DEBUG_BUTTON_CHANGE:
+			s.Texture.ResourceId = R.drawable.debug_button_change;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_MAZE_SIZE_LABEL:
+			s.Texture.ResourceId = R.drawable.debug_text_maze_size_label;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_MAZE_SIZE_VALUE_SMALL:
+			s.Texture.ResourceId = R.drawable.debug_text_maze_size_value_small;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_MAZE_SIZE_VALUE_MEDIUM:
+			s.Texture.ResourceId = R.drawable.debug_text_maze_size_value_medium;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_MAZE_SIZE_VALUE_LARGE:
+			s.Texture.ResourceId = R.drawable.debug_text_maze_size_value_large;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_ZOOM_LABEL:
+			s.Texture.ResourceId = R.drawable.debug_text_zoom_label;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_ZOOM_VALUE_MINIMUM:
+			s.Texture.ResourceId = R.drawable.debug_text_zoom_value_minimum;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_ZOOM_VALUE_MEDIUM:
+			s.Texture.ResourceId = R.drawable.debug_text_zoom_value_medium;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_ZOOM_VALUE_MAXIMUM:
+			s.Texture.ResourceId = R.drawable.debug_text_zoom_value_maximum;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_PEEK_LABEL:
+			s.Texture.ResourceId = R.drawable.debug_text_peek_label;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_PEEK_VALUE_OFF:
+			s.Texture.ResourceId = R.drawable.debug_text_peek_value_off;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_PEEK_VALUE_NORMAL:
+			s.Texture.ResourceId = R.drawable.debug_text_peek_value_normal;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_PEEK_VALUE_MAXIMUM:
+			s.Texture.ResourceId = R.drawable.debug_text_peek_value_maximum;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_GOAL_INDICATOR_LABEL:
+			s.Texture.ResourceId = R.drawable.debug_text_goal_indicator_label;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_GOAL_INDICATOR_VALUE_ON:
+			s.Texture.ResourceId = R.drawable.debug_text_goal_indicator_value_on;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_GOAL_INDICATOR_VALUE_OFF:
+			s.Texture.ResourceId = R.drawable.debug_text_goal_indicator_value_off;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_LABEL:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_label;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_VALUE_OFF:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_value_off;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_VALUE_TOGGLE:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_value_toggle;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_VALUE_FADE_SLOW:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_value_fade_slow;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_VALUE_FADE_FAST:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_value_fade_fast;
+			s.Frames = FrameHelper._256x64;
+			break;
+		case TMImage.DEBUG_TEXT_INVISIBLE_WALLS_VALUE_ALWAYS:
+			s.Texture.ResourceId = R.drawable.debug_text_invisible_walls_value_always;
+			s.Frames = FrameHelper._256x64;
+			break;
 		default:
 			super.setupSprite(s, image);
 			break;
